@@ -1,6 +1,6 @@
 #### Graficos % de grupos troficos y abundancia de familias por tr.####
 
-
+library(ggplot2)
 
 
 
@@ -177,8 +177,8 @@ familiesplotpuechabon<- ggplot(gg, aes(x=variable, y=value, fill=factor(treatmen
   theme(legend.position = "none")
 
 
-#library(grid)
-#library(gridExtra)
+
+library(gridExtra)
 grid.arrange(familiesplotalcornocales,familiesplotpuechabon,ncol=2, bottom=textGrob("Families",gp=gpar(fontsize=25)))
 
 ####percentages of families#####
@@ -309,7 +309,7 @@ familiesapercen <- 100*((familiesa[,3:54])/(familiesa[,2]))###calculate percenta
 familiesapercen<-cbind(familiesapercen,familiesa$treatment)
 colnames(familiesapercen)[53]<-"treatment"
 familiespuechpercen <- 100*((familiesp[,3:54])/(familiesp[,2]))###calculate percentages
-familiespuechpercen<-cbind(familiespuechpercen,familiesa$treatment)
+familiespuechpercen<-cbind(familiespuechpercen,familiesp$treatment)
 colnames(familiespuechpercen)[53]<-"treatment"
 
 

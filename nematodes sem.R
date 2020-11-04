@@ -98,7 +98,7 @@ prueba3 <- (semd[,c(3,26:33)])
 
 
 
-gg<-melt(prueba,id.vars=c("treatment"))
+gg<-melt(prueba3,id.vars=c("treatment"))
 
 indexs_plot2_alcor<-  ggplot(gg, aes(x=variable, y=value, fill=factor(treatment))) + 
   stat_summary(fun.y=mean, geom="bar",position="dodge") + 
@@ -241,13 +241,13 @@ hervibores_number~RootTa_M18g
 omnivores_number~RootTa_M18g
 #omnivores_number~pathogen2018
 
-#bacterivores_number~moisture_content
+bacterivores_number~moisture_content
 bacterivores_number~RootTa_M18g
+bacterivores_number~Nmic18
 
-
-
+#fungivores_number~Nmic18
 fungivores_number~pathogen2018 
-fungivores_number~RootSt_M18g
+#fungivores_number~RootSt_M18g
 fungivores_number~moisture_content
 
 predators_number~~fungivores_number
@@ -256,6 +256,10 @@ predators_number~pathogen2018
 RootTa_M18g~pathogen2018
 RootSt_M18g~pathogen2018
 
+
+
+
+pathogen2018~moisture_content
 #correlation
  
 
@@ -293,6 +297,8 @@ nematodes_sem <- rbind (nematodesc, nematodesre)
 
 ###abndancia grupos troficos nematodos
 
+### sem1. parece que si metemos soil moisture a fungivore los fitmeasures mejoran  un pelin
+
 multigroup.model <- '
 #regressions
 #litter_quality = ~initial_cn #+ sla+thickness## esto seria para crear una variable latente?
@@ -302,27 +308,36 @@ multigroup.model <- '
 hervibores_number~moisture_content
 hervibores_number~mo
 hervibores_number~RootSu_M18g
-hervibores_number~RootTa_M18g
+#hervibores_number~RootTa_M18g
+#hervibores_number~pathogen2018
+
+
 
 omnivores_number~moisture_content
-omnivores_number~RootTa_M18g
+omnivores_number~RootTa_M18g # si ponemos este y quitamos el de herbívoros sale mejor
 omnivores_number~pathogen2018
 
 bacterivores_number~moisture_content
-bacterivores_number~RootTa_M18g
+#bacterivores_number~RootTa_M18g
+bacterivores_number~Nmic18
+bacterivores_number~pathogen2018
 
 
-
+fungivores_number~Nmic18
 fungivores_number~pathogen2018 
-fungivores_number~RootSt_M18g
-fungivores_number~moisture_content
+#fungivores_number~RootSt_M18g
+#fungivores_number~moisture_content
+
 
 predators_number~~fungivores_number
 predators_number~pathogen2018
+#predators_number~Nmic18
 
 RootTa_M18g~pathogen2018
 RootSu_M18g~pathogen2018
-RootSt_M18g~pathogen2018
+#RootSt_M18g~pathogen2018
+
+#pathogen2018~moisture_content
 
 #correlation
  
@@ -347,6 +362,72 @@ summary(multigroup.constrained)
 anova(multigroup, multigroup.constrained)
 
 semPaths(multigroup)
+
+
+####sem2
+
+
+
+multigroup.model <- '
+#regressions
+#litter_quality = ~initial_cn #+ sla+thickness## esto seria para crear una variable latente?
+#hervibores_number~Cmic18
+
+
+
+hervibores_number~moisture_content
+hervibores_number~mo
+hervibores_number~RootSu_M18g
+hervibores_number~RootTa_M18g
+hervibores_number~pathogen2018
+
+
+
+omnivores_number~moisture_content
+#omnivores_number~RootTa_M18g # si ponemos este y quitamos el de herbívoros sale mejor
+#omnivores_number~pathogen2018
+
+bacterivores_number~moisture_content
+#bacterivores_number~RootTa_M18g
+bacterivores_number~Nmic18
+bacterivores_number~pathogen2018
+
+
+fungivores_number~Nmic18
+#fungivores_number~pathogen2018 
+#fungivores_number~RootSt_M18g
+#fungivores_number~moisture_content
+
+predators_number~~fungivores_number
+predators_number~pathogen2018
+#predators_number~Nmic18
+
+RootTa_M18g~pathogen2018
+RootSu_M18g~pathogen2018
+#RootSt_M18g~pathogen2018
+
+#pathogen2018~moisture_content
+
+#correlation
+ 
+
+#intercept
+'
+multigroup <- sem(multigroup.model, nematodes_sem, group = "group") 
+
+summary(multigroup, standardize=T)
+varTable(multigroup)
+
+fitMeasures(multigroup, c("cfi","rmsea","srmr", "pvalue"))
+
+
+#this is to check that allowing coefficient to vary among groups improve our statistical fit
+
+multigroup.constrained <- sem(multigroup.model, nematodes_sem, group = "group", group.equal = c("intercepts", "regressions"))
+
+summary(multigroup.constrained)
+
+anova(multigroup, multigroup.constrained)
 
 
 
